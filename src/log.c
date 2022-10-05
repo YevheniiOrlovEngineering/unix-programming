@@ -2,7 +2,7 @@
 // Created by engineer on 30.09.22.
 //
 
-#include "log.h"
+#include <log.h>
 
 void
 print_log(
