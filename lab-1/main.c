@@ -5,16 +5,15 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
-#include "../utils/log/log.h"
-#include "../utils/file/file.h"
+
+#include <log.h>
+#include <file.h>
 
 #define BUF_SIZE    512
 #define PERMS       0644
 #define LOG_PARAMS   __DATE__, __FILE__, __FUNCTION__, __LINE__
 #define LOG_FMT_TPL "[ %s ] [ SOURCE: %s | FUNCTION: %s() | LINE: %d ]\n(%s) \n"
 #define ERROR_TPL   "%s: %s"
-
-
 
 
 void
@@ -66,7 +65,7 @@ main (
                     fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
                 return 1;
             default:
-                abort ();
+                exit (EXIT_FAILURE);
         }
 
     for (int index = optind; index < argc; index++)
@@ -122,5 +121,4 @@ main (
  * eval file name, having file descriptor
  * logging standard in C
  * sprintf usage when no numbers; (want to expand values to template)
- * use char* instead of char[] in close file
  */
