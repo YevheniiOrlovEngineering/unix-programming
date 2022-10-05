@@ -1,7 +1,5 @@
 .PHONY: all clean run prepare-env
 
-include $(WORKDIR)/params.env
-
 IDIR 	:= ./include
 SRCDIR 	:= ./src
 BINDIR 	:= ./bin
@@ -11,21 +9,22 @@ CC 	:= gcc
 CFLAGS 	:= -I$(IDIR)
 LIBS	:= -lm
 
-WORKDIR ?= example
-BINNAME ?= help
-_OBJ 	?= help.o
+WORKDIR ?= test
+BINNAME ?= test
+_OBJ 	?= test greet
 ODIR 	:= $(WORKDIR)/obj
-OBJ 	:= $(patsubst %,$(ODIR)/%,$(_OBJ))
-
 VPATH 	:= $(SRCDIR):$(WORKDIR)
 
+include $(WORKDIR)/params.env
+
+OBJ 	:= $(patsubst %,$(ODIR)/%.o,$(_OBJ))
 
 all: prepare-env build run
 
+build: prepare-env $(BINDIR)/$(BINNAME)
+
 prepare-env:
 	mkdir -p $(BINDIR) $(ODIR)
-
-build: $(BINDIR)/$(BINNAME)
 
 run:
 	$(BINDIR)/$(BINNAME)
