@@ -4,13 +4,12 @@
 #include <file.h>
 
 void
-to_upper(
-        char *s
+close_file(
+        const int fd, const char *f_name
 ) {
-    for (int i = 0; s[i] != '\0'; ++i) {
-        if (s[i] >= 'a' && s[i] <= 'z') {
-            s[i] = (const char) (s[i] - 32);
-        }
+    char msg_buf[BUF_SIZE];
+    if (-1 == close (fd)) {
+        sprintf (msg_buf, ERROR_TPL, strerror (errno), f_name);
+        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, msg_buf);
     }
 }
-

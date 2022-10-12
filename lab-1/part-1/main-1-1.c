@@ -1,29 +1,21 @@
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
-#include <errno.h>
 
 #include <log.h>
 #include <file.h>
 
 #define BUF_SIZE    512
 #define PERMS       0644
-#define LOG_PARAMS   __DATE__, __FILE__, __FUNCTION__, __LINE__
-#define LOG_FMT_TPL "[ %s ] [ SOURCE: %s | FUNCTION: %s() | LINE: %d ]\n(%s) \n"
-#define ERROR_TPL   "%s: %s"
-
 
 void
-close_file(
-        const int fd, const char *f_name
-        ) {
-    char msg_buf[BUF_SIZE];
-    if (-1 == close (fd)) {
-        sprintf(msg_buf, ERROR_TPL, strerror (errno), f_name);
-        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, msg_buf);
+to_upper(
+        char *s
+) {
+    for (int i = 0; s[i] != '\0'; ++i) {
+        if (s[i] >= 'a' && s[i] <= 'z') {
+            s[i] = (const char) (s[i] - 32);
+        }
     }
 }
 
@@ -63,25 +55,26 @@ main (
                     fprintf (stderr, "Unknown option `-%c'.\n", optopt);
                 else
                     fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
-                return 1;
+                return EXIT_FAILURE;
             default:
-                exit (EXIT_FAILURE);
+                return EXIT_FAILURE;
         }
 
     for (int index = optind; index < argc; index++)
         printf ("Non-option argument %s\n", argv[index]);
 
+
     if (-1 == (fd_in = open (p_source, O_RDONLY))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
         print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
-        exit (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     if (-1 == (fd_out = open (p_destination, O_CREAT|O_WRONLY, PERMS))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
         print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
         close_file(fd_in, p_source);
-        exit (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     while ((bytes_read = read (fd_in, buf, BUF_SIZE)) > 0 && bytes_read != -1) {
@@ -91,13 +84,13 @@ main (
             print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
             close_file(fd_in, p_source);
             close_file(fd_out, p_destination);
-            exit (EXIT_FAILURE);
+            return EXIT_FAILURE;
         } else if (bytes_written < bytes_read) {
             sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
             print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
             close_file(fd_in, p_source);
             close_file(fd_out, p_destination);
-            exit (EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
         bytes_total += bytes_written;
     }
@@ -108,11 +101,11 @@ main (
     if (-1 == bytes_read) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
         print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
-        exit (EXIT_FAILURE);
+        return EXIT_FAILURE;
     } else  {
         sprintf (buf, "Bytes overwritten: %ld", bytes_total);
         print_log(stdout, LOG_FMT_TPL, LOG_PARAMS, buf);
-        exit (EXIT_SUCCESS);
+        return EXIT_SUCCESS;
     }
 }
 
