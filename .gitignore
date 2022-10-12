@@ -4,6 +4,12 @@
 *cmake-build-debug
 *CMakeLists.txt
 
+# Git
+*.orig
+
+# Build
+*bin
+
 # Prerequisites
 *.d
 
