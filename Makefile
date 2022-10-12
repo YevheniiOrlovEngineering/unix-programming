@@ -1,23 +1,26 @@
-.PHONY: all clean run prepare-env
+.PHONY: all clean run prepare-env build
 
-IDIR 	:= ./include
-SRCDIR 	:= ./src
-BINDIR 	:= ./bin
-LDIR 	:= ./lib
+IDIR 		:= ./include
+SRCDIR 		:= ./src
+BINDIR 		:= ./bin
+LDIR 		:= ./lib
 
-CC 	:= gcc
-CFLAGS 	:= -I$(IDIR)
-LIBS	:= -lm
+CC 		:= gcc
+CFLAGS 		:= -I$(IDIR)
+LIBS		:= -lm
 
-WORKDIR ?= test
-BINNAME ?= test
-_OBJ 	?= test greet
-ODIR 	:= $(WORKDIR)/obj
-VPATH 	:= $(SRCDIR):$(WORKDIR)
+WORKDIR 	?= test
+BINNAME 	?= test
+_OBJ 		?= test greet
+VPATH 		:= $(SRCDIR):$(WORKDIR)
 
-include $(WORKDIR)/params.env
+CONFIG_FILE 	:= config.mk
+CONFIG  	:= $(WORKDIR)/$(CONFIG_FILE)
 
-OBJ 	:= $(patsubst %,$(ODIR)/%.o,$(_OBJ))
+ODIR 		:= $(WORKDIR)/obj
+OBJ 		= $(patsubst %,$(ODIR)/%.o,$(_OBJ))
+
+include $(CONFIG)
 
 all: prepare-env build run
 
@@ -37,3 +40,19 @@ $(ODIR)/%.o: %.c
 
 $(BINDIR)/$(BINNAME): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+#TODO: override mk variables from $WORKDIR/config
+
+#--lab-1-part-1:
+#	$(eval WORKDIR := lab-1/part-1)
+#--lab-1-part-2:
+#	$(eval WORKDIR := lab-1/part-2)
+#
+#--get-config:
+#	$(eval BINNAME := $(shell sed -n 1p $(WORKDIR)/.env))
+#	$(eval _OBJ    := $(shell sed -n 2p $(WORKDIR)/.env))
+
+#
+#lab-1-1: --lab-1-part-1 --get-config all
+#
+#lab-1-2: --lab-1-part-2 all
