@@ -4,8 +4,8 @@
 
 #include <log.h>
 #include <file.h>
+#include <constants.h>
 
-#define BUF_SIZE    512
 #define PERMS       0644
 
 void
@@ -79,13 +79,7 @@ main (
 
     while ((bytes_read = read (fd_in, buf, BUF_SIZE)) > 0 && bytes_read != -1) {
         to_upper(buf);
-        if ((bytes_written = write (fd_out, buf, bytes_read)) == -1) {
-            sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
-            print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
-            close_file(fd_in, p_source);
-            close_file(fd_out, p_destination);
-            return EXIT_FAILURE;
-        } else if (bytes_written < bytes_read) {
+        if ((bytes_written = write (fd_out, buf, bytes_read)) == -1 || bytes_written < bytes_read) {
             sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
             print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
             close_file(fd_in, p_source);

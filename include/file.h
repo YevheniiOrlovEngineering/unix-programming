@@ -1,7 +1,3 @@
-//
-// Created by engineer on 30.09.22.
-//
-
 #ifndef FILE_H
 #define FILE_H
 

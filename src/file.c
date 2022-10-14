@@ -1,6 +1,3 @@
-//
-// Created by engineer on 30.09.22.
-//
 #include <file.h>
 
 void
