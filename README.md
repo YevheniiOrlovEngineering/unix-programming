@@ -2,7 +2,7 @@
 
 ### Usage
 ```bash
-WORKDIR=<src-folder> make [options] [target] ...
+WORKDIR=<lab-folder> make [options] [target] ...
 ```
 
-###### E.g. WORKDIR=lab-1/part-1 make
+###### E.g. WORKDIR=lab-1/part-1 make build
