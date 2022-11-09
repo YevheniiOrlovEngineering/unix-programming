@@ -42,7 +42,7 @@ main (
 
     if (par == NULL) {
         sprintf (write_buf, ERROR_TPL, "No string identifier had been passed", par);
-        print_log(stdout, LOG_FMT_TPL, LOG_PARAMS, write_buf);
+        print_log(stdout, write_buf);
         return EXIT_FAILURE;
     }
 
@@ -60,24 +60,24 @@ main (
 
         switch (select(ndfs, &rfds, NULL, NULL, &tv)) {
             case -1:
-                print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, strerror(errno));
+                print_log(stderr, strerror(errno));
                 break;
             case 0:
                 sprintf (write_buf, ERROR_TPL,  "Time's out. No data has been passed", par);
-                print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, write_buf);
+                print_log(stderr, write_buf);
                 break;
             default:
                 if ((bytes_read = read (STDIN_FILENO, read_buf, BUF_SIZE)) > 0 && bytes_read != -1) {
                     sprintf(write_buf, "%s", par);
-                    print_log(stdout, LOG_FMT_TPL, LOG_PARAMS, write_buf);
+                    print_log(stdout, write_buf);
                     if ((
                             bytes_written = write (STDOUT_FILENO, read_buf, bytes_read)) == -1 ||
                             bytes_written < bytes_read) {
-                        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, strerror (errno));
+                        print_log(stderr, strerror (errno));
                         return EXIT_FAILURE;
                     }
                 } else {
-                    print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, strerror (errno));
+                    print_log(stderr, strerror (errno));
                     return EXIT_FAILURE;
                 }
         }

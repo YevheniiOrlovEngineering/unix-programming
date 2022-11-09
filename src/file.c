@@ -7,6 +7,6 @@ close_file(
     char msg_buf[BUF_SIZE];
     if (-1 == close (fd)) {
         sprintf (msg_buf, ERROR_TPL, strerror (errno), f_name);
-        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, msg_buf);
+        print_log(stderr, msg_buf);
     }
 }

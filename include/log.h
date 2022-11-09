@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-void print_log(FILE *, const char *, const char *, const char *, const char *, int, const char *);
+void print_log(FILE *, const char *);
 
 #endif //LOG_H

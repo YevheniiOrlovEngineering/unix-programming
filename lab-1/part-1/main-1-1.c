@@ -66,13 +66,13 @@ main (
 
     if (-1 == (fd_in = open (p_source, O_RDONLY))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
-        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
+        print_log(stderr, buf);
         return EXIT_FAILURE;
     }
 
     if (-1 == (fd_out = open (p_destination, O_CREAT|O_WRONLY, PERMS))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
-        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
+        print_log(stderr, buf);
         close_file(fd_in, p_source);
         return EXIT_FAILURE;
     }
@@ -81,7 +81,7 @@ main (
         to_upper(buf);
         if ((bytes_written = write (fd_out, buf, bytes_read)) == -1 || bytes_written < bytes_read) {
             sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
-            print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
+            print_log(stderr, buf);
             close_file(fd_in, p_source);
             close_file(fd_out, p_destination);
             return EXIT_FAILURE;
@@ -94,11 +94,11 @@ main (
 
     if (-1 == bytes_read) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
-        print_log(stderr, LOG_FMT_TPL, LOG_PARAMS, buf);
+        print_log(stderr, buf);
         return EXIT_FAILURE;
     } else  {
         sprintf (buf, "Bytes overwritten: %ld", bytes_total);
-        print_log(stdout, LOG_FMT_TPL, LOG_PARAMS, buf);
+        print_log(stdout, buf);
         return EXIT_SUCCESS;
     }
 }
