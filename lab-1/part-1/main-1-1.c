@@ -1,9 +1,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
 
 #include <log.h>
-#include <file.h>
 #include <constants.h>
 
 #define PERMS       0644
@@ -24,9 +26,10 @@ int
 main (
         int argc, char **argv
         ) {
+    const char *bin_name;
     char *p_source = NULL;
     char *p_destination = NULL;
-    char buf[BUF_SIZE];
+    char buf[BUFSIZ];
 
     long bytes_total = 0;
 
@@ -39,6 +42,12 @@ main (
 
     opterr = 0;
     errno  = 0;
+
+    if (argc == 0) {
+        print_log(stderr, "Unknown", "Program name had not been passed as cmd arg.");
+        return EXIT_FAILURE;
+    }
+    bin_name = argv[0];
 
     while ((c = getopt (argc, argv, "i:o:")) != -1)
         switch (c) {
@@ -66,46 +75,44 @@ main (
 
     if (-1 == (fd_in = open (p_source, O_RDONLY))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
-        print_log(stderr, buf);
+        print_log(stderr, bin_name, buf);
         return EXIT_FAILURE;
     }
 
     if (-1 == (fd_out = open (p_destination, O_CREAT|O_WRONLY, PERMS))) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
-        print_log(stderr, buf);
-        close_file(fd_in, p_source);
+        print_log(stderr, bin_name, buf);
+        if (close(fd_in) != 0)
+            print_log(stderr, bin_name, strerror (errno));
         return EXIT_FAILURE;
     }
 
-    while ((bytes_read = read (fd_in, buf, BUF_SIZE)) > 0 && bytes_read != -1) {
+    while ((bytes_read = read (fd_in, buf, BUFSIZ)) > 0 && bytes_read != -1) {
         to_upper(buf);
         if ((bytes_written = write (fd_out, buf, bytes_read)) == -1 || bytes_written < bytes_read) {
             sprintf (buf, ERROR_TPL, strerror (errno), p_destination);
-            print_log(stderr, buf);
-            close_file(fd_in, p_source);
-            close_file(fd_out, p_destination);
+            print_log(stderr, bin_name, buf);
+            if (close(fd_in) != 0)
+                print_log(stderr, bin_name, strerror (errno));
+            if (close(fd_out) != 0)
+                print_log(stderr, bin_name, strerror (errno));
             return EXIT_FAILURE;
         }
         bytes_total += bytes_written;
     }
 
-    close_file(fd_in, p_source);
-    close_file(fd_out, p_destination);
+    if (close(fd_in) != 0)
+        print_log(stderr, bin_name, strerror (errno));
+    if (close(fd_out) != 0)
+        print_log(stderr, bin_name, strerror (errno));
 
     if (-1 == bytes_read) {
         sprintf (buf, ERROR_TPL, strerror (errno), p_source);
-        print_log(stderr, buf);
+        print_log(stderr, bin_name, buf);
         return EXIT_FAILURE;
     } else  {
         sprintf (buf, "Bytes overwritten: %ld", bytes_total);
-        print_log(stdout, buf);
+        print_log(stdout, bin_name, buf);
         return EXIT_SUCCESS;
     }
 }
-
-/*
- * QA:
- * eval file name, having file descriptor
- * logging standard in C
- * sprintf usage when no numbers; (want to expand values to template)
- */

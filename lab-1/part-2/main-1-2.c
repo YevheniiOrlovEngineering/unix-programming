@@ -11,11 +11,18 @@ int
 main (
         int argc, char **argv
         ) {
+    const char *bin_name;
     char *par = NULL;
     int c;
 
     opterr = 0;
     errno  = 0;
+
+    if (argc == 0) {
+        print_log(stderr, "Unknown", "Program name had not been passed as cmd arg.");
+        return EXIT_FAILURE;
+    }
+    bin_name = argv[0];
 
     while ((c = getopt (argc, argv, "p:")) != -1)
         switch (c) {
@@ -37,12 +44,12 @@ main (
     for (int index = optind; index < argc; index++)
         printf ("Non-option argument %s\n", argv[index]);
 
-    char read_buf[BUF_SIZE];
-    char write_buf[2 * BUF_SIZE];
+    char read_buf[BUFSIZ];
+    char write_buf[2 * BUFSIZ];
 
     if (par == NULL) {
         sprintf (write_buf, ERROR_TPL, "No string identifier had been passed", par);
-        print_log(stdout, write_buf);
+        print_log(stdout, bin_name, write_buf);
         return EXIT_FAILURE;
     }
 
@@ -60,24 +67,24 @@ main (
 
         switch (select(ndfs, &rfds, NULL, NULL, &tv)) {
             case -1:
-                print_log(stderr, strerror(errno));
+                print_log(stderr, bin_name, strerror(errno));
                 break;
             case 0:
                 sprintf (write_buf, ERROR_TPL,  "Time's out. No data has been passed", par);
-                print_log(stderr, write_buf);
+                print_log(stderr, bin_name, write_buf);
                 break;
             default:
-                if ((bytes_read = read (STDIN_FILENO, read_buf, BUF_SIZE)) > 0 && bytes_read != -1) {
+                if ((bytes_read = read (STDIN_FILENO, read_buf, BUFSIZ)) > 0 && bytes_read != -1) {
                     sprintf(write_buf, "%s", par);
-                    print_log(stdout, write_buf);
+                    print_log(stdout, bin_name, write_buf);
                     if ((
                             bytes_written = write (STDOUT_FILENO, read_buf, bytes_read)) == -1 ||
                             bytes_written < bytes_read) {
-                        print_log(stderr, strerror (errno));
+                        print_log(stderr, bin_name, strerror (errno));
                         return EXIT_FAILURE;
                     }
                 } else {
-                    print_log(stderr, strerror (errno));
+                    print_log(stderr, bin_name, strerror (errno));
                     return EXIT_FAILURE;
                 }
         }
