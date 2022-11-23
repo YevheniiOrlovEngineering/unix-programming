@@ -84,15 +84,13 @@ main(int argc, char **argv) {
 
     fd = open_log(full_fn_log, bin_name, O_WRONLY|O_APPEND);
 
-    sprintf(buf, "%s %s: Daemon Started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
-            get_cur_time(), bin_name, getpid (), getgid (), getppid (), getsid (getpid ()));
-    if ((bytes_written = write (fd, buf, strlen (buf))) != strlen (buf) || bytes_written < strlen (buf)) {
-        print_log(stderr, bin_name, strerror (errno));
-        return EXIT_FAILURE;
+    for (;;) {
+        sprintf(buf, "%s %s: Daemon Started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
+                get_cur_time(), bin_name, getpid (), getgid (), getppid (), getsid (getpid ()));
+        if ((bytes_written = write (fd, buf, strlen (buf))) != strlen (buf) || bytes_written < strlen (buf)) {
+            print_log(stderr, bin_name, strerror (errno));
+            return EXIT_FAILURE;
+        }
+        sleep (1);
     }
-
-    if (close (fd) != 0)
-        print_log(stderr, bin_name, strerror (errno));
-
-    for (;;) { sleep (5); }
 }
