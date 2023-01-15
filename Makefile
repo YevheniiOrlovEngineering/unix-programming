@@ -7,7 +7,7 @@ LDIR 		:= ./lib
 
 CC 		:= gcc
 CFLAGS 		:= -I$(IDIR)
-LIBS		:= -lm
+LIBS		:= -lrt
 
 WORKDIR 	?= test
 BINNAME 	?= test
