@@ -13,17 +13,6 @@ static int fd;
 static const char* bin_name;
 
 
-int
-open_log(const char *path, int oflag) {
-    if ((fd = open (path, oflag, 0644)) == -1) {
-        print_log(stderr, bin_name, strerror (errno));
-        exit (EXIT_FAILURE);
-    }
-    return fd;
-}
-
-
-
 void
 signal_handler(int signo, siginfo_t* si, void* ucontext) {
     char buf[BUFSIZ];
@@ -96,7 +85,7 @@ main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    fd = open_log(full_fn_log, O_CREAT | O_WRONLY | O_TRUNC);
+    fd = open_file(full_fn_log, O_CREAT | O_WRONLY | O_TRUNC, bin_name);
 
     sprintf(buf, "%s %s: Main process started. pid: %d\n",
             get_cur_time(), bin_name, getpid());
@@ -114,5 +103,4 @@ main(int argc, char** argv) {
         write_to_file(fd, buf, bin_name);
         sleep(sleeping_time);
     }
-    return EXIT_SUCCESS;
 }

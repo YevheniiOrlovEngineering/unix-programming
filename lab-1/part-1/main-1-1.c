@@ -8,8 +8,6 @@
 #include <log.h>
 #include <constants.h>
 
-#define PERMS       0644
-
 void
 to_upper(
         char *s

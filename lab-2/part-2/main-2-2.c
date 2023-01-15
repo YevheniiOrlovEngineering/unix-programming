@@ -9,15 +9,6 @@
 #include "log.h"
 #include "file.h"
 
-int
-open_log(const char *path, const char *bin_name, int oflag) {
-    int fd;
-    if ((fd = open (path, oflag, 0644)) == -1) {
-        print_log(stderr, bin_name, strerror (errno));
-        exit (EXIT_FAILURE);
-    }
-    return fd;
-}
 
 int
 main(int argc, char **argv) {
@@ -43,7 +34,7 @@ main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    fd = open_log(full_fn_log, bin_name, O_CREAT|O_WRONLY|O_TRUNC);
+    fd = open_file(full_fn_log, O_CREAT | O_WRONLY | O_TRUNC, bin_name);
 
     sprintf(buf, "%s %s: Main process started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
             get_cur_time(), bin_name, getpid (), getgid (), getppid (), getsid (getpid ()));
@@ -81,7 +72,7 @@ main(int argc, char **argv) {
     dup (0);
     dup (0);
 
-    fd = open_log(full_fn_log, bin_name, O_WRONLY|O_APPEND);
+    fd = open_file(full_fn_log, O_WRONLY|O_APPEND, bin_name);
 
     for (;;) {
         sprintf(buf, "%s %s: Daemon Started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
