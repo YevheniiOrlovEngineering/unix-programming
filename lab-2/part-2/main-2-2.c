@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 
 #include "log.h"
+#include "file.h"
 
 int
 open_log(const char *path, const char *bin_name, int oflag) {
@@ -46,10 +47,8 @@ main(int argc, char **argv) {
 
     sprintf(buf, "%s %s: Main process started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
             get_cur_time(), bin_name, getpid (), getgid (), getppid (), getsid (getpid ()));
-    if ((bytes_written = write (fd, buf, strlen (buf))) != strlen (buf) || bytes_written < strlen (buf)) {
-        print_log(stderr, bin_name, strerror (errno));
-        return EXIT_FAILURE;
-    }
+    write_to_file(fd, buf, bin_name);
+
     umask(0);
     if ((pid = fork ()) < 0) {
         print_log(stderr, bin_name, strerror (errno));
@@ -87,10 +86,7 @@ main(int argc, char **argv) {
     for (;;) {
         sprintf(buf, "%s %s: Daemon Started. pid: %d, gid: %d, ppid: %d, sid: %d\n",
                 get_cur_time(), bin_name, getpid (), getgid (), getppid (), getsid (getpid ()));
-        if ((bytes_written = write (fd, buf, strlen (buf))) != strlen (buf) || bytes_written < strlen (buf)) {
-            print_log(stderr, bin_name, strerror (errno));
-            return EXIT_FAILURE;
-        }
+        write_to_file(fd, buf, bin_name);
         sleep (1);
     }
 }

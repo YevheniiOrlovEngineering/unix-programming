@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 
-#include "constants.h"
 #include "log.h"
 
 static const char *bin_name;
